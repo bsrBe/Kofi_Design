@@ -18,7 +18,7 @@ const router: Router = Router();
 router.get('/admin/all', validateAdminAuth, getAllRevisionsWrapper);
 router.get('/admin/pending', validateAdminAuth, getPendingRevisionsWrapper);
 router.get('/admin/user/:userId', validateAdminAuth, getRevisionsByUserWrapper);
-router.patch('/admin/status', validateAdminAuth, updateRevisionStatusWrapper);
+router.patch('/admin/status/:id', validateAdminAuth, updateRevisionStatusWrapper);
 
 // --- User Routes ---
 // Protected by Telegram Auth
