@@ -7,8 +7,9 @@ import User from './user.model.js';
 import Order from './order.model.js';
 import Revision from './revision.model.js';
 import Admin from './admin.model.js';
+import Collection from './collection.model.js';
 
-export { User, Order, Revision, Admin };
+export { User, Order, Revision, Admin, Collection };
 
 // Re-export types
 export * from './types.js';

@@ -1,5 +1,6 @@
 import type { Request, Response } from 'express';
 import { createRevision, getRevisionsByOrderId, getRevisionById, updateRevisionStatus, getAllRevisions, getPendingRevisions, getRevisionsByUser } from '../services/revisions.service.js';
+import { CloudinaryService } from '../services/cloudinary.service.js';
 import type { IRevision } from '../models/types.js';
 import { getOrderById } from '../services/order.service.js';
 
@@ -14,6 +15,13 @@ export const createRevisionWrapper = async (req: Request, res: Response): Promis
     }
     const order = await getOrderById(orderId); 
     if (order?.telegramId !== req.user?.id) throw new Error('Order does not belong to user');
+
+    const file = req.file;
+    if (file) {
+        const result = await CloudinaryService.uploadImage(file.buffer, 'revisions');
+        revisionData.inspirationFileId = result.url;
+        revisionData.inspirationPublicId = result.publicId;
+    }
 
     const revision = await createRevision(orderId, revisionData as Partial<IRevision>);
     

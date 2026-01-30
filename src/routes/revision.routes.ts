@@ -9,6 +9,7 @@ import {
     getRevisionsByUserWrapper
 } from '../controllers/revision.controller.js';
 import { validateTelegramAuth, validateAdminAuth, validateAnyAuth } from '../middleware/auth.middleware.js';
+import { upload } from '../middleware/upload.middleware.js';
 import { submissionLimiter } from '../middleware/rateLimit.middleware.js';
 
 const router: Router = Router();
@@ -22,7 +23,7 @@ router.patch('/admin/status/:id', validateAdminAuth, updateRevisionStatusWrapper
 
 // --- User Routes ---
 // Protected by Telegram Auth
-router.post('/:orderId', validateTelegramAuth, submissionLimiter, createRevisionWrapper);
+router.post('/:orderId', validateTelegramAuth, submissionLimiter, upload.single('photo'), createRevisionWrapper);
 
 // --- Shared Routes (Admin or User) ---
 router.get('/order/:orderId', validateAnyAuth, getOrderRevisions);

@@ -77,6 +77,7 @@ export interface IOrder {
   // Section 5: Visual Inspiration
   bodyConcerns?: string;
   inspirationFileId?: string;
+  inspirationPublicId?: string;
   colorPreference?: string;
   
   // Section 6: Agreement
@@ -120,6 +121,7 @@ export interface IRevision {
   
   // Visual Elements
   inspirationFileId?: string | File | undefined;
+  inspirationPublicId?: string;
   bodyConcerns?: string;
   colorPreference?: string;
   
@@ -165,7 +167,8 @@ export interface IFormSubmission {
   
   // Section 5: Visual Inspiration
   bodyConcerns?: string;
-  inspirationPhoto?: File | string;
+  inspirationPhoto?: string;
+  inspirationPublicId?: string;
   colorPreference?: string;
   fabricPreference?: string;
   
@@ -203,4 +206,18 @@ export interface IRevisionResponse extends IApiResponse {
     canRequestRevision: boolean;
     revisionCount: number;
   };
+}
+// ========== Collection Types ==========
+export interface ICollection {
+  _id: string | Types.ObjectId;
+  title: string;
+  image: string; // Storing the fileId or URL
+  cloudinaryPublicId?: string;
+  tags: string[];
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface ICollectionResponse extends IApiResponse {
+  data?: ICollection | ICollection[];
 }

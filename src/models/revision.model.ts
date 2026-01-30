@@ -48,6 +48,10 @@ const RevisionSchema = new mongoose.Schema({
     type: String,
     required: false
   }, // Telegram File ID
+  inspirationPublicId: {
+    type: String,
+    required: false
+  }, // Cloudinary Public ID
   bodyConcerns: {
     type: String,
     default: ""

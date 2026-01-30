@@ -69,4 +69,14 @@ export class NotificationService {
     }
     throw new Error('Upload failed after multiple attempts');
   }
+
+  static async getFileUrl(fileId: string): Promise<string> {
+    try {
+      const link = await bot.telegram.getFileLink(fileId);
+      return link.toString();
+    } catch (err) {
+      console.error("Get file link fail:", err);
+      throw err;
+    }
+  }
 }

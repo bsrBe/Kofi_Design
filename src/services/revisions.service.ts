@@ -21,6 +21,7 @@ export const createRevision = async (orderId: string, revisionData: Partial<IRev
     orderId,
     measurements: mergedMeasurements,
     inspirationFileId: revisionData.inspirationFileId || order.inspirationFileId,
+    inspirationPublicId: revisionData.inspirationPublicId || order.inspirationPublicId,
     bodyConcerns: revisionData.bodyConcerns || order.bodyConcerns,
     colorPreference: revisionData.colorPreference || order.colorPreference,
     status: 'pending',

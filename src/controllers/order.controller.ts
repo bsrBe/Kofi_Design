@@ -9,6 +9,7 @@ import {
     updateOrderStatus 
 } from '../services/order.service.js';
 import { NotificationService } from '../services/telegram.service.js';
+import { CloudinaryService } from '../services/cloudinary.service.js';
 import type { IFormSubmission } from '../models/types.js';
 
 export const submitOrderWrapper = async (req: Request, res: Response): Promise<void> => {
@@ -38,11 +39,15 @@ export const submitOrderWrapper = async (req: Request, res: Response): Promise<v
         } as IFormSubmission;
     }
 
-    // Handle File Upload to Telegram (Strict)
-    let inspirationFileId: string | undefined;
+    // Handle File Upload to Cloudinary
+    let inspirationUrl: string | undefined;
+    let inspirationPublicId: string | undefined;
+
     if (file) {
       try {
-        inspirationFileId = await NotificationService.uploadPhoto(file.buffer);
+        const result = await CloudinaryService.uploadImage(file.buffer, 'orders');
+        inspirationUrl = result.url;
+        inspirationPublicId = result.publicId;
       } catch (uploadError) {
         res.status(503).json({ 
           success: false, 
@@ -52,8 +57,9 @@ export const submitOrderWrapper = async (req: Request, res: Response): Promise<v
       }
     }
 
-    if (inspirationFileId) {
-        submission.inspirationPhoto = inspirationFileId;
+    if (inspirationUrl) {
+        submission.inspirationPhoto = inspirationUrl;
+        (submission as any).inspirationPublicId = inspirationPublicId;
     }
     // Users must be identified by a Telegram ID from the Auth Middleware
     const telegramId = req.user?.id;
@@ -106,12 +112,6 @@ export const getOrders = async (req: Request, res: Response): Promise<void> => {
   try {
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 10;
-    
-    // Check if user is requesting their own history via auth middleware
-    // If route is protected and middleware populates user, we can default to filtered view
-    // But usually admin routes and user routes are separate or controlled by role.
-    // Given the simplicity, let's make a specific "getMyOrders" or adapt this based on role?
-    // Creating separate getMyOrders for clarity.
     
     const result = await getAllOrders(page, limit);
     

@@ -41,6 +41,7 @@ export const createOrder = async (submission: IFormSubmission, telegramId: strin
     measurements: submission.measurements,
     bodyConcerns: submission.bodyConcerns || "",
     inspirationFileId: submission.inspirationPhoto,
+    inspirationPublicId: submission.inspirationPublicId,
     colorPreference: submission.colorPreference || "",
     termsAccepted: submission.termsAccepted,
     termsAcceptedAt: new Date(),
@@ -61,6 +62,7 @@ export const createOrder = async (submission: IFormSubmission, telegramId: strin
     orderId: order._id,
     measurements: submission.measurements,
     inspirationFileId: submission.inspirationPhoto,
+    inspirationPublicId: submission.inspirationPublicId as any,
     isFree: true,
     status: 'approved',
     adminNotes: 'Initial measurement set from order creation'

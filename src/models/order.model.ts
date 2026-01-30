@@ -116,6 +116,10 @@ const orderSchema = new mongoose.Schema({
     type: String,
     required: false
   }, // Telegram File ID for the uploaded photo
+  inspirationPublicId: {
+    type: String,
+    required: false
+  }, // Cloudinary Public ID
   colorPreference: {
     type: String,
     default: ""
