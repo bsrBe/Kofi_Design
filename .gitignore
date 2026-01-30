@@ -1,0 +1,27 @@
+# Dependencies
+node_modules/
+.pnpm-debug.log*
+
+# Build output
+dist/
+
+# Env
+.env
+.env.local
+.env.*.local
+
+# Generated TypeScript files
+src/**/*.d.ts
+src/**/*.map
+src/**/*.js
+!src/index.ts
+!src/types.ts
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+scripts/
