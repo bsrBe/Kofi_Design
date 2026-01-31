@@ -10,16 +10,43 @@ export class NotificationService {
   static async initBot(webhookUrl?: string): Promise<any> {
     // 1. Basic Commands
     bot.start((ctx) => {
-      if(!process.env.FRONTEND_URL){
-        throw new Error('Environment Variable FRONTEND_URL not added');
-      }
-      const miniAppUrl = process.env.FRONTEND_URL;
-      ctx.reply(`Welcome to Kofi Design! 👗\n\nClick the button below to start your order.`, {
+      const miniAppUrl = process.env.FRONTEND_URL || '';
+      ctx.reply(`Welcome to Kofi's Design Atelier 👗\n\nExperience bespoke fashion tailored to your silhouette. Click the button below to browse our collections or start a custom creation.`, {
         reply_markup: {
           inline_keyboard: [
-            [{ text: "Open App", web_app: { url: miniAppUrl } }]
+            [{ text: "✨ Open Atelier App", web_app: { url: miniAppUrl } }]
           ]
         }
+      });
+    });
+
+    bot.command('myorders', (ctx) => {
+      const url = `${process.env.FRONTEND_URL}?view=my-orders`;
+      ctx.reply(`📦 <b>Track Your Masterpieces</b>\n\nClick below to view your active orders, track production progress, and manage revisions.`, {
+        parse_mode: 'HTML',
+        reply_markup: {
+          inline_keyboard: [
+            [{ text: "📽️ View My Orders", web_app: { url } }]
+          ]
+        }
+      });
+    });
+
+    bot.command('collections', (ctx) => {
+      const url = `${process.env.FRONTEND_URL}?view=collections`;
+      ctx.reply(`🏛️ <b>The Atelier Vault</b>\n\nExplore our latest seasonal collections and signature pieces designed for timeless elegance.`, {
+        parse_mode: 'HTML',
+        reply_markup: {
+          inline_keyboard: [
+            [{ text: "💎 Browse Collections", web_app: { url } }]
+          ]
+        }
+      });
+    });
+
+    bot.command('help', (ctx) => {
+      ctx.reply(`<b>Need Assistance?</b> 🕊️\n\n• Use /start to launch the main app\n• Use /myorders to track your pieces\n• Use /collections to see our latest work\n\nFor direct support or to discuss a unique vision, contact our designer: @DesignerUsername`, {
+        parse_mode: 'HTML'
       });
     });
 
