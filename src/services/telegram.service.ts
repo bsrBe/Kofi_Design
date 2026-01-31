@@ -45,7 +45,7 @@ export class NotificationService {
     });
 
     bot.command('help', (ctx) => {
-      ctx.reply(`<b>Need Assistance?</b> 🕊️\n\n• Use /start to launch the main app\n• Use /myorders to track your pieces\n• Use /collections to see our latest work\n\nFor direct support or to discuss a unique vision, contact our designer: @DesignerUsername`, {
+      ctx.reply(`<b>Need Assistance?</b> 🕊️\n\n• Use /start to launch the main app\n• Use /myorders to track your pieces\n• Use /collections to see our latest work\n\nFor direct support or to discuss a unique vision, contact our designer: <a href="https://t.me/kofi251">@kofi251</a>`, {
         parse_mode: 'HTML'
       });
     });
