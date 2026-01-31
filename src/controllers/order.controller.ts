@@ -69,7 +69,7 @@ export const submitOrderWrapper = async (req: Request, res: Response): Promise<v
 
     if (inspirationUrl) {
         submission.inspirationPhoto = inspirationUrl;
-        (submission as any).inspirationPublicId = inspirationPublicId;
+        submission.inspirationPublicId = inspirationPublicId;
     }
     // Users must be identified by a Telegram ID from the Auth Middleware
     const telegramId = req.user?.id;
