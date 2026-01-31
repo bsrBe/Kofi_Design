@@ -59,15 +59,20 @@ export const createOrder = async (submission: IFormSubmission, telegramId: strin
   await User.findByIdAndUpdate(user._id, { $inc: { totalOrders: 1 } });
 
   // 4. Create Initial Revision Entry
-  await Revision.create({
+  const initialRevision = await Revision.create({
     orderId: order._id,
     measurements: submission.measurements,
-    inspirationFileId: submission.inspirationPhoto,
-    inspirationPublicId: submission.inspirationPublicId as any,
+    inspirationFileId: submission.inspirationFileId,
+    inspirationPhoto: submission.inspirationPhoto,
+    inspirationPublicId: submission.inspirationPublicId,
     isFree: true,
     status: 'approved',
     adminNotes: 'Initial measurement set from order creation'
-  });
+  } as any);
+
+  // 5. Link revision to order history and save
+  order.history.push(initialRevision._id as any);
+  await order.save();
 
   // 5. Asynchronous Notification Flow
   const adminNotification = AdminTemplates.NEW_ORDER(

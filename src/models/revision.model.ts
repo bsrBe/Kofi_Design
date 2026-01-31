@@ -52,6 +52,10 @@ const RevisionSchema = new mongoose.Schema({
     type: String,
     required: false
   }, // Cloudinary Public ID
+  inspirationPhoto: {
+    type: String,
+    required: false
+  }, // Cloudinary URL
   bodyConcerns: {
     type: String,
     default: ""

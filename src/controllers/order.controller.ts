@@ -36,6 +36,9 @@ export const submitOrderWrapper = async (req: Request, res: Response): Promise<v
             bodyConcerns: body.bodyConcerns,
             colorPreference: body.colorPreference,
             fabricPreference: body.fabricPreference,
+            inspirationFileId: body.inspirationFileId,
+            inspirationPublicId: body.inspirationPublicId,
+            inspirationPhoto: body.inspirationPhoto,
             termsAccepted: body.termsAccepted === 'true' || body.termsAccepted === true,
             revisionPolicyAccepted: body.revisionPolicyAccepted === 'true' || body.revisionPolicyAccepted === true
         } as IFormSubmission;

@@ -123,9 +123,10 @@ export interface IRevision {
   
   // Visual Elements
   inspirationFileId?: string | File | undefined;
-  inspirationPublicId?: string;
-  bodyConcerns?: string;
-  colorPreference?: string;
+  inspirationPublicId?: string | undefined;
+  inspirationPhoto?: string | undefined;
+  bodyConcerns?: string | undefined;
+  colorPreference?: string | undefined;
   
   // Revision Tracking
   revisionNumber: number;
@@ -168,12 +169,12 @@ export interface IFormSubmission {
   measurements: IMeasurements;
   
   // Section 5: Visual Inspiration
-  bodyConcerns?: string;
-  inspirationPhoto?: string; // Cloudinary URL
-  inspirationFileId?: string; // Telegram File ID
-  inspirationPublicId?: string; // Cloudinary Public ID
-  colorPreference?: string;
-  fabricPreference?: string;
+  bodyConcerns?: string | undefined;
+  inspirationPhoto?: string | undefined; // Cloudinary URL
+  inspirationFileId?: string | undefined; // Telegram File ID
+  inspirationPublicId?: string | undefined; // Cloudinary Public ID
+  colorPreference?: string | undefined;
+  fabricPreference?: string | undefined;
   
   // Section 6: Agreement
   termsAccepted: boolean;
