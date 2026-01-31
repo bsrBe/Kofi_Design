@@ -3,12 +3,10 @@ import { User } from '../models/index.js';
 
 export const getMe = async (req: Request, res: Response) => {
     try {
-        const authReq = req.headers.authorization;
-
-        const telegramId = authReq?.split(' ')[1];
+        const telegramId = (req as any).user?.id;
 
         if (!telegramId) {
-            res.status(401).json({ message: 'Unauthorized' });
+            res.status(401).json({ message: 'Unauthorized: No Telegram ID' });
             return;
         }
 

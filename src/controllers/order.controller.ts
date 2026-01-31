@@ -38,10 +38,15 @@ export const submitOrderWrapper = async (req: Request, res: Response): Promise<v
             fabricPreference: body.fabricPreference,
             inspirationFileId: body.inspirationFileId,
             inspirationPublicId: body.inspirationPublicId,
-            inspirationPhoto: body.inspirationPhoto,
+            inspirationPhoto: typeof body.inspirationPhoto === 'string' ? body.inspirationPhoto : undefined,
             termsAccepted: body.termsAccepted === 'true' || body.termsAccepted === true,
             revisionPolicyAccepted: body.revisionPolicyAccepted === 'true' || body.revisionPolicyAccepted === true
         } as IFormSubmission;
+    }
+    
+    // Sanitize inspirationPhoto to prevent cast errors
+    if (submission.inspirationPhoto && typeof submission.inspirationPhoto !== 'string') {
+        submission.inspirationPhoto = undefined;
     }
 
     // Handle File Upload to Cloudinary
