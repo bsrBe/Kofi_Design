@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { submitOrderWrapper, getOrder, getOrders, getMyOrders, sendQuote, confirmDeposit, updateStatus } from '../controllers/order.controller.js';
+import { submitOrderWrapper, getOrder, getOrders, getMyOrders, sendQuote, confirmDeposit, updateStatus, getDashboardStats, createAdminOrder } from '../controllers/order.controller.js';
 import { upload } from '../middleware/upload.middleware.js';
 import { validateAdminAuth, validateAnyAuth, validateTelegramAuth } from '../middleware/auth.middleware.js';
 import { submissionLimiter } from '../middleware/rateLimit.middleware.js';
@@ -12,6 +12,8 @@ router.post('/', validateTelegramAuth, submissionLimiter, upload.single('inspira
 router.get('/my-orders', validateTelegramAuth, getMyOrders);
 
 // Admin Routes
+router.post('/manual', validateAdminAuth, createAdminOrder);
+router.get('/stats', validateAdminAuth, getDashboardStats);
 router.get('/', validateAdminAuth, getOrders);
 router.patch('/:id/quote', validateAdminAuth, sendQuote);
 router.patch('/:id/confirm-deposit', validateAdminAuth, confirmDeposit);

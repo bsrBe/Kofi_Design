@@ -23,6 +23,8 @@ export interface IAdmin {
   email: string;
   phoneNumber: string;
   password: string;
+  secretQuestion?: string;
+  secretAnswer?: string; // Hashed
   role: AdminRole;
   isActive: boolean;
   createdAt: Date;
@@ -167,8 +169,9 @@ export interface IFormSubmission {
   
   // Section 5: Visual Inspiration
   bodyConcerns?: string;
-  inspirationPhoto?: string;
-  inspirationPublicId?: string;
+  inspirationPhoto?: string; // Cloudinary URL
+  inspirationFileId?: string; // Telegram File ID
+  inspirationPublicId?: string; // Cloudinary Public ID
   colorPreference?: string;
   fabricPreference?: string;
   

@@ -28,6 +28,13 @@ const adminSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  secretQuestion: {
+    type: String,
+    trim: true
+  },
+  secretAnswer: {
+    type: String
+  },
   role: {
     type: String,
     enum: ['admin', 'super_admin'],

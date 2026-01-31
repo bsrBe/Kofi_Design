@@ -3,10 +3,12 @@ import {
     createOrder, 
     getOrderById, 
     getAllOrders, 
+    getAllOrdersNoPagination,
     getOrdersByUser, 
     sendOrderQuote, 
     confirmDepositPaid, 
-    updateOrderStatus 
+    updateOrderStatus,
+    createManualOrder
 } from '../services/order.service.js';
 import { NotificationService } from '../services/telegram.service.js';
 import { CloudinaryService } from '../services/cloudinary.service.js';
@@ -86,6 +88,27 @@ export const submitOrderWrapper = async (req: Request, res: Response): Promise<v
   }
 };
 
+export const createAdminOrder = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const submission = req.body as IFormSubmission;
+        if (!submission.phoneNumber || !submission.fullName || !submission.orderType) {
+             res.status(400).json({ success: false, message: 'Name, Phone, and Order Type are required' });
+             return;
+        }
+        
+        // Ensure defaults
+        submission.measurements = submission.measurements || { bust: 0, waist: 0, hips: 0, shoulderWidth: 0, dressLength: 0, armLength: 0, height: 0 };
+        submission.termsAccepted = true; // Admin entry implies consent
+        submission.revisionPolicyAccepted = true;
+
+        const order = await createManualOrder(submission);
+        res.status(201).json({ success: true, data: order });
+    } catch (error: any) {
+        console.error('Create Admin Order Error:', error);
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
 export const getOrder = async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
@@ -112,8 +135,21 @@ export const getOrders = async (req: Request, res: Response): Promise<void> => {
   try {
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 10;
+    const status = req.query.status as string;
+    const rush = req.query.rush as string;
+
+    const filter: any = {};
+    if (status === 'Pending') {
+        filter.status = 'form_submitted';
+    } else if (status === 'Completed') {
+        filter.status = { $in: ['delivered'] };
+    }
     
-    const result = await getAllOrders(page, limit);
+    if (rush === 'true') {
+        filter.rushMultiplier = { $gt: 1 };
+    }
+    
+    const result = await getAllOrders(page, limit, filter);
     
     res.status(200).json({ 
       success: true, 
@@ -217,3 +253,60 @@ export const updateStatus = async (req: Request, res: Response): Promise<void> =
         res.status(500).json({ success: false, message: error.message });
     }
 };
+
+export const getDashboardStats = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const orders = await getAllOrdersNoPagination();
+        
+        // Calculate stats based on actual order statuses
+        // Active orders = all except 'delivered'
+        const activeOrdersCount = orders.filter((o: any) => 
+            o.status !== 'delivered'
+        ).length;
+        
+        // Pending quotes = orders waiting for bill to be sent
+        const pendingQuotesCount = orders.filter((o: any) => 
+            o.status === 'form_submitted'
+        ).length;
+        
+        // Rush orders
+        const rushOrdersCount = orders.filter((o: any) => 
+            o.rushMultiplier && o.rushMultiplier > 1
+        ).length;
+
+        // Ready to ship orders
+        const readyOrdersCount = orders.filter((o: any) => 
+            o.status === 'ready'
+        ).length;
+        
+        // Calculate revenue
+        const totalRevenue = orders.reduce((acc: number, o: any) => 
+            acc + (o.totalPrice || 0), 0
+        );
+        
+        // Balance due = total - deposits paid
+        const balanceDue = orders.reduce((acc: number, o: any) => {
+            if (!o.totalPrice) return acc;
+            // If status is 'paid', 'in_progress', 'ready', or 'delivered', deposit has been paid
+            const depositPaid = ['paid', 'in_progress', 'ready', 'delivered'].includes(o.status);
+            const depositAmount = depositPaid ? (o.depositAmount || o.totalPrice * 0.3) : 0;
+            return acc + (o.totalPrice - depositAmount);
+        }, 0);
+        
+        res.status(200).json({
+            success: true,
+            data: {
+                activeOrdersCount,
+                pendingQuotesCount,
+                rushOrdersCount,
+                readyOrdersCount,
+                totalRevenue,
+                balanceDue,
+                totalOrders: orders.length
+            }
+        });
+    } catch (error: any) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+

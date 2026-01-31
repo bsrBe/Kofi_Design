@@ -27,7 +27,7 @@ export const validateTelegramAuth = (req: Request, res: Response, next: NextFunc
 
   // Development Bypass for easier Postman testing
   if (process.env.NODE_ENV === 'development' && authHeader === 'tma mock_user') {
-    req.user = { id: '12345678', username: 'mock_tester' };
+    req.user = { id: '425976495', username: '@BsreAbrham' };
     return next();
   }
 

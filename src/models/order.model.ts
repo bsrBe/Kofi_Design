@@ -120,6 +120,10 @@ const orderSchema = new mongoose.Schema({
     type: String,
     required: false
   }, // Cloudinary Public ID
+  inspirationPhoto: {
+    type: String,
+    required: false
+  }, // Cloudinary URL for the inspiration photo
   colorPreference: {
     type: String,
     default: ""

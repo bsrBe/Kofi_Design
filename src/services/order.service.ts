@@ -40,8 +40,9 @@ export const createOrder = async (submission: IFormSubmission, telegramId: strin
     preferredDeliveryDate: new Date(submission.preferredDeliveryDate),
     measurements: submission.measurements,
     bodyConcerns: submission.bodyConcerns || "",
-    inspirationFileId: submission.inspirationPhoto,
-    inspirationPublicId: submission.inspirationPublicId,
+    inspirationFileId: submission.inspirationFileId, // Telegram File ID (if any)
+    inspirationPublicId: submission.inspirationPublicId, // Cloudinary public ID
+    inspirationPhoto: submission.inspirationPhoto, // Cloudinary URL
     colorPreference: submission.colorPreference || "",
     termsAccepted: submission.termsAccepted,
     termsAcceptedAt: new Date(),
@@ -87,6 +88,18 @@ export const createOrder = async (submission: IFormSubmission, telegramId: strin
     .catch(err => console.error("Admin Notification Error:", err));
 
   return order.toObject();
+};
+
+/**
+ * Manually create an order for a walk-in client or via Admin.
+ * Resolves Telegram ID via Phone Number or generates a placeholder.
+ */
+export const createManualOrder = async (submission: IFormSubmission): Promise<IOrder> => {
+    const existingUser = await User.findOne({ phoneNumber: submission.phoneNumber });
+    // Use existing ID or generate walkin ID
+    const telegramId = existingUser ? existingUser.telegramId : `walkin_${submission.phoneNumber.replace(/\D/g, '')}`;
+    
+    return await createOrder(submission, telegramId);
 };
 
 export const getOrderById = async (orderId: string): Promise<IOrder | null> => {
@@ -202,16 +215,20 @@ export const getOrdersByUser = async (telegramId: string, page: number = 1, limi
   return { orders, total };
 };
 
-export const getAllOrders = async (page: number = 1, limit: number = 10): Promise<{ orders: IOrder[]; total: number }> => {
+export const getAllOrders = async (page: number = 1, limit: number = 10, filter: any = {}): Promise<{ orders: IOrder[]; total: number }> => {
   const skip = (page - 1) * limit;
-  const orders = await Order.find()
+  const orders = await Order.find(filter)
     .sort({ createdAt: -1 })
     .skip(skip)
     .limit(limit)
     .populate('userId', 'fullName phoneNumber telegramId')
     .lean();
-  const total = await Order.countDocuments();
+  const total = await Order.countDocuments(filter);
   return { orders, total };
+};
+
+export const getAllOrdersNoPagination = async (): Promise<IOrder[]> => {
+    return await Order.find().lean();
 };
 
 export const getPendingOrders = async (): Promise<IOrder[]> => {

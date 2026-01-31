@@ -8,6 +8,7 @@ import orderRoutes from './routes/order.routes.js';
 import revisionRoutes from './routes/revision.routes.js';
 import adminRoutes from './routes/admin.routes.js';
 import collectionRoutes from './routes/collection.routes.js';
+import userRoutes from './routes/user.routes.js';
 import { globalLimiter } from './middleware/rateLimit.middleware.js';
 
 const app = express();
@@ -44,6 +45,7 @@ app.use('/api/orders', orderRoutes);
 app.use('/api/revisions', revisionRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/collections', collectionRoutes);
+app.use('/api/users', userRoutes);
 
 // Health Check
 app.get('/health', (req, res) => {

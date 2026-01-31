@@ -97,3 +97,117 @@ export const getMe = async (req: Request, res: Response): Promise<void> => {
         res.status(500).json({ success: false, message: error.message });
     }
 };
+
+// Update Password (logged in)
+export const updatePassword = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const { oldPassword, newPassword } = req.body;
+        const adminId = req.user?.id;
+
+        const admin = await Admin.findById(adminId);
+        if (!admin) {
+            res.status(404).json({ success: false, message: 'Admin not found' });
+            return;
+        }
+
+        // Verify Old Password
+        const isMatch = await bcrypt.compare(oldPassword, admin.password);
+        if (!isMatch) {
+            res.status(400).json({ success: false, message: 'Incorrect old password' });
+            return;
+        }
+
+        // Hash New Password
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+        admin.password = hashedPassword;
+        await admin.save();
+
+        res.status(200).json({ success: true, message: 'Password updated successfully' });
+    } catch (error: any) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+// Setup Security Question (logged in)
+export const setupSecurity = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const { secretQuestion, secretAnswer } = req.body;
+        const adminId = req.user?.id;
+
+        const admin = await Admin.findById(adminId);
+        if (!admin) {
+            res.status(404).json({ success: false, message: 'Admin not found' });
+            return;
+        }
+
+        if (admin.secretQuestion) {
+            res.status(400).json({ success: false, message: 'Security question already configured' });
+            return;
+        }
+
+        // Hash Secret Answer
+        const salt = await bcrypt.genSalt(10);
+        const hashedAnswer = await bcrypt.hash(secretAnswer.toLowerCase(), salt);
+
+        admin.secretQuestion = secretQuestion;
+        admin.secretAnswer = hashedAnswer;
+        await admin.save();
+
+        res.status(200).json({ success: true, message: 'Security information updated successfully' });
+    } catch (error: any) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+// Get Secret Question (forgot password flow)
+export const getSecretQuestion = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const { email } = req.body;
+        const admin = await Admin.findOne({ email });
+
+        if (!admin || !admin.secretQuestion) {
+            res.status(404).json({ success: false, message: 'Admin with security question not found' });
+            return;
+        }
+
+        res.status(200).json({
+            success: true,
+            secretQuestion: admin.secretQuestion
+        });
+    } catch (error: any) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+// Reset Password (forgot password flow)
+export const resetPassword = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const { email, secretAnswer, newPassword } = req.body;
+        const admin = await Admin.findOne({ email });
+
+        if (!admin || !admin.secretAnswer) {
+            res.status(404).json({ success: false, message: 'Security info not available for this account' });
+            return;
+        }
+
+        // Verify Secret Answer
+        const isMatch = await bcrypt.compare(secretAnswer.toLowerCase(), admin.secretAnswer);
+        if (!isMatch) {
+            res.status(400).json({ success: false, message: 'Incorrect security answer' });
+            return;
+        }
+
+        // Hash New Password
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+        admin.password = hashedPassword;
+        await admin.save();
+
+        res.status(200).json({ success: true, message: 'Password reset successfully' });
+    } catch (error: any) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
