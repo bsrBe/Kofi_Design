@@ -17,9 +17,15 @@ const PORT = process.env.PORT || 5000;
 // Security Middlewares
 app.use(helmet()); // Sets various HTTP headers for security
 app.use(cors({
-    origin: process.env.FRONTEND_URL || '*', // Restrict to frontend URL in production
+    origin: [
+        process.env.FRONTEND_URL || '',
+        process.env.ADMIN_URL || '',
+        'http://localhost:5173',
+        'http://localhost:3000'
+    ].filter(Boolean),
     methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization']
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true
 }));
 app.use(globalLimiter); // Protect all routes from generic spam
 
