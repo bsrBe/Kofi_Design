@@ -89,7 +89,7 @@ export const createOrder = async (submission: IFormSubmission, telegramId: strin
     .catch(err => console.error("User Notification Error:", err));
 
   // Notify Admin/Storage Channel
-  NotificationService.sendUpdate(process.env.ADMIN_CHAT_ID!, adminNotification)
+  NotificationService.notifyAdmins(adminNotification)
     .catch(err => console.error("Admin Notification Error:", err));
 
   return order.toObject();

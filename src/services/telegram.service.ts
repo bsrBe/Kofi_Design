@@ -71,6 +71,14 @@ export class NotificationService {
     }
   }
 
+  static async notifyAdmins(message: string) {
+    const adminIds = (process.env.ADMIN_CHAT_ID || '').split(',').map(id => id.trim());
+    await Promise.all(adminIds.map(id => {
+        if (id) return this.sendUpdate(id, message);
+        return Promise.resolve();
+    }));
+  }
+
   static async uploadPhoto(buffer: Buffer, attempts: number = 3): Promise<string> {
     if(!process.env.STORAGE_CHANNEL_ID){
          throw new Error('Environment Variable STORAGE_CHANNEL_ID not added');

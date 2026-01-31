@@ -52,7 +52,7 @@ export const createRevision = async (orderId: string, revisionData: Partial<IRev
       (revision._id as string)
   );
   
-  NotificationService.sendUpdate(process.env.ADMIN_CHAT_ID!, adminMsg)
+  NotificationService.notifyAdmins(adminMsg)
     .catch(err => console.error("Admin Revision Notification Error:", err));
 
   return revision.toObject();
