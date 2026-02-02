@@ -13,34 +13,9 @@ const RevisionSchema = new mongoose.Schema({
   },
   // ========== Measurement Snapshot ==========
   measurements: {
-    bust: {
-      type: Number,
-      required: true
-    },
-    waist: {
-      type: Number,
-      required: true
-    }, 
-    hips: {
-      type: Number,
-      required: true
-    }, 
-    shoulderWidth: {
-      type: Number,
-      required: true
-    }, 
-    dressLength: {
-      type: Number,
-      required: true
-    }, 
-    armLength: {
-      type: Number,
-      required: true
-    }, 
-    height: {
-      type: Number,
-      required: true
-    }
+    type: Map,
+    of: Number,
+    required: true
   },
   
   // ========== Visual Elements ==========
