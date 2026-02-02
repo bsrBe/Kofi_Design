@@ -11,7 +11,7 @@ export class NotificationService {
     // 1. Basic Commands
     bot.start((ctx) => {
       const miniAppUrl = process.env.FRONTEND_URL || '';
-      ctx.reply(`Welcome to Kofi's Design Atelier 👗\n\nExperience bespoke fashion tailored to your silhouette. Click the button below to browse our collections or start a custom creation.`, {
+      ctx.reply(`Welcome to Keni's Design Atelier 👗\n\nExperience bespoke fashion tailored to your silhouette. Click the button below to browse our collections or start a custom creation.`, {
         reply_markup: {
           inline_keyboard: [
             [{ text: "✨ Open Atelier App", web_app: { url: miniAppUrl } }]

@@ -15,6 +15,11 @@ const orderSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  collectionId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Collection',
+    required: false
+  },
 
   // ========== SECTION 1: Client Profile (Embedded for quick access) ==========
   clientProfile: {
@@ -77,34 +82,9 @@ const orderSchema = new mongoose.Schema({
 
   // ========== SECTION 4: Precision Measurements (Current) ==========
   measurements: {
-    bust: {
-      type: Number,
-      required: true
-    },
-    waist: {
-      type: Number,
-      required: true
-    },
-    hips: {
-      type: Number,
-      required: true
-    },
-    shoulderWidth: {
-      type: Number,
-      required: true
-    },
-    dressLength: {
-      type: Number,
-      required: true
-    },
-    armLength: {
-      type: Number,
-      required: true
-    },
-    height: {
-      type: Number,
-      required: true
-    }
+    type: Map,
+    of: Number,
+    required: true
   },
 
   // ========== SECTION 5: Visual Inspiration ==========

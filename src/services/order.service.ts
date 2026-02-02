@@ -35,6 +35,7 @@ export const createOrder = async (submission: IFormSubmission, telegramId: strin
     },
     orderType: submission.orderType,
     occasion: submission.occasion,
+    collectionId: submission.collectionId,
     fabricPreference: submission.fabricPreference || "",
     eventDate: new Date(submission.eventDate),
     preferredDeliveryDate: new Date(submission.preferredDeliveryDate),
@@ -108,7 +109,10 @@ export const createManualOrder = async (submission: IFormSubmission): Promise<IO
 };
 
 export const getOrderById = async (orderId: string): Promise<IOrder | null> => {
-  const order = await Order.findById(orderId).populate('userId', 'fullName phoneNumber telegramId').lean();
+  const order = await Order.findById(orderId)
+    .populate('userId', 'fullName phoneNumber telegramId')
+    .populate('collectionId')
+    .lean();
   return order;
 };
 
@@ -227,6 +231,7 @@ export const getAllOrders = async (page: number = 1, limit: number = 10, filter:
     .skip(skip)
     .limit(limit)
     .populate('userId', 'fullName phoneNumber telegramId')
+    .populate('collectionId')
     .lean();
   const total = await Order.countDocuments(filter);
   return { orders, total };
@@ -238,4 +243,52 @@ export const getAllOrdersNoPagination = async (): Promise<IOrder[]> => {
 
 export const getPendingOrders = async (): Promise<IOrder[]> => {
   return await Order.find({ status: 'form_submitted' }).lean();
+};
+
+/**
+ * Updates an existing order if it's still in 'form_submitted' status.
+ */
+export const updateUserOrder = async (orderId: string, telegramId: string, updates: Partial<IFormSubmission>): Promise<IOrder | null> => {
+    const order = await Order.findOne({ _id: orderId, telegramId });
+    if (!order) return null;
+    
+    if (order.status !== 'form_submitted') {
+        throw new Error('Order can only be edited while in pending status.');
+    }
+
+    // Update Client Profile (within order)
+    if (updates.fullName) order.clientProfile.fullName = updates.fullName;
+    if (updates.phoneNumber) order.clientProfile.phoneNumber = updates.phoneNumber;
+    if (updates.city) order.clientProfile.city = updates.city;
+    if (updates.instagramHandle) order.clientProfile.instagramHandle = updates.instagramHandle;
+
+    // Update Order Details
+    if (updates.orderType) order.orderType = updates.orderType;
+    if (updates.occasion) order.occasion = updates.occasion;
+    if (updates.collectionId) order.collectionId = updates.collectionId as any;
+    if (updates.fabricPreference) order.fabricPreference = updates.fabricPreference;
+    if (updates.eventDate) order.eventDate = new Date(updates.eventDate);
+    if (updates.preferredDeliveryDate) order.preferredDeliveryDate = new Date(updates.preferredDeliveryDate);
+    if (updates.measurements) order.measurements = updates.measurements;
+    if (updates.bodyConcerns) order.bodyConcerns = updates.bodyConcerns;
+    if (updates.colorPreference) order.colorPreference = updates.colorPreference;
+    
+    // Physical Inspiration
+    if (updates.inspirationPhoto) order.inspirationPhoto = updates.inspirationPhoto;
+    if (updates.inspirationPublicId) order.inspirationPublicId = updates.inspirationPublicId;
+    if (updates.inspirationFileId) order.inspirationFileId = updates.inspirationFileId;
+
+    await order.save(); // Triggers pre-save hooks (rush logic recalculation)
+
+    // Sync with the initial revision
+    if (order.history && order.history.length > 0) {
+        await Revision.findByIdAndUpdate(order.history[0], {
+            measurements: order.measurements,
+            inspirationPhoto: order.inspirationPhoto,
+            inspirationPublicId: order.inspirationPublicId,
+            inspirationFileId: order.inspirationFileId
+        });
+    }
+
+    return order.toObject();
 };

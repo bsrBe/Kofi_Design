@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { submitOrderWrapper, getOrder, getOrders, getMyOrders, sendQuote, confirmDeposit, updateStatus, getDashboardStats, createAdminOrder } from '../controllers/order.controller.js';
+import { submitOrderWrapper, getOrder, getOrders, getMyOrders, sendQuote, confirmDeposit, updateStatus, getDashboardStats, createAdminOrder, updateOrder } from '../controllers/order.controller.js';
 import { upload } from '../middleware/upload.middleware.js';
 import { validateAdminAuth, validateAnyAuth, validateTelegramAuth } from '../middleware/auth.middleware.js';
 import { submissionLimiter } from '../middleware/rateLimit.middleware.js';
@@ -10,6 +10,7 @@ router.post('/', validateTelegramAuth, submissionLimiter, upload.single('inspira
 
 // Get my orders (history)
 router.get('/my-orders', validateTelegramAuth, getMyOrders);
+router.patch('/:id', validateTelegramAuth, upload.single('inspirationPhoto'), updateOrder);
 
 // Admin Routes
 router.post('/manual', validateAdminAuth, createAdminOrder);

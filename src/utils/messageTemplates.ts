@@ -6,12 +6,14 @@ export const UserTemplates = {
     ORDER_RECEIVED: (fullName: string) => 
         `We’ve received your order form 🤍\nWe’ll review the details and get back to you shortly.`,
 
-    ORDER_QUOTE: (totalPrice: number, deliveryDate: string, rushFee: number) => 
-        `Based on your order, here are the details:\n` +
-        `📌 Total price: <b>${totalPrice} ETB</b>\n` +
-        `📌 Delivery date: <b>${deliveryDate}</b>\n` +
-        `📌 Rush fee: <b>${rushFee > 0 ? rushFee + ' ETB' : 'None'}</b>\n\n` +
-        `A 30% deposit is required to confirm your order.`,
+    ORDER_QUOTE: (totalPrice: number, deliveryDate: string, rushFee: number) => {
+        const depositAmount = Math.round(totalPrice * 0.3);
+        return `Based on your order, here are the details:\n` +
+            `📌 Total price: <b>${totalPrice.toLocaleString()} ETB</b>\n` +
+            `📌 Delivery date: <b>${deliveryDate}</b>\n` +
+            `📌 Rush fee: <b>${rushFee > 0 ? rushFee.toLocaleString() + ' ETB' : 'None'}</b>\n\n` +
+            `A 30% deposit of <b>${depositAmount.toLocaleString()} ETB</b> is required to confirm your order.`;
+    },
 
     ORDER_CONFIRMED: (orderType: string, deliveryDate: string) => 
         `Your order has been confirmed 🤍\n` +

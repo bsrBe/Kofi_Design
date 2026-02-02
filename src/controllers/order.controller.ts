@@ -8,7 +8,8 @@ import {
     sendOrderQuote, 
     confirmDepositPaid, 
     updateOrderStatus,
-    createManualOrder
+    createManualOrder,
+    updateUserOrder
 } from '../services/order.service.js';
 import { NotificationService } from '../services/telegram.service.js';
 import { CloudinaryService } from '../services/cloudinary.service.js';
@@ -315,6 +316,58 @@ export const getDashboardStats = async (req: Request, res: Response): Promise<vo
         });
     } catch (error: any) {
         res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+export const updateOrder = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const { id } = req.params;
+        const { body, file } = req;
+        const telegramId = req.user?.id;
+
+        if (!id) {
+            res.status(400).json({ success: false, message: 'Order ID is required' });
+            return;
+        }
+
+        if (!telegramId) {
+            res.status(401).json({ success: false, message: 'Unauthorized' });
+            return;
+        }
+
+        let updates: Partial<IFormSubmission> = body.data ? JSON.parse(body.data) : { ...body };
+        
+        // Handle measurements if they came as a string
+        if (updates.measurements && typeof updates.measurements === 'string') {
+            updates.measurements = JSON.parse(updates.measurements);
+        }
+
+        // Handle File Upload if present
+        if (file) {
+            const result = await CloudinaryService.uploadImage(file.buffer, 'orders');
+            updates.inspirationPhoto = result.url;
+            updates.inspirationPublicId = result.publicId;
+        }
+
+        const updatedOrder = await updateUserOrder(id as string, telegramId as string, updates);
+
+        if (!updatedOrder) {
+            res.status(404).json({ success: false, message: 'Order not found or access denied' });
+            return;
+        }
+
+        res.status(200).json({
+            success: true,
+            message: 'Order updated successfully',
+            data: updatedOrder
+        });
+
+    } catch (error: any) {
+        console.error('Error updating order:', error);
+        res.status(error.message.includes('status') ? 400 : 500).json({ 
+            success: false, 
+            message: error.message || 'Internal Server Error' 
+        });
     }
 };
 

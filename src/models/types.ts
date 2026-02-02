@@ -32,18 +32,12 @@ export interface IAdmin {
 }
 
 // ========== Order Types ==========
-export type OrderType = 'custom_event_dress' | 'signature_dress';
+export type OrderType = 'custom_event_dress' | 'signature_dress' | 'top' | 'dress' | 'pants' | 'jacket';
 export type OccasionType = 'wedding' | 'party' | 'graduation' | 'other';
 export type OrderStatus = 'form_submitted' | 'bill_sent' | 'paid' | 'in_progress' | 'ready' | 'delivered' | 'revision_requested';
 
 export interface IMeasurements {
-  bust: number;
-  waist: number;
-  hips: number;
-  shoulderWidth: number;
-  dressLength: number;
-  armLength: number;
-  height: number;
+  [key: string]: number;
 }
 
 export interface IClientProfile {
@@ -57,6 +51,7 @@ export interface IOrder {
   _id: string | Types.ObjectId;
   userId: string | Types.ObjectId;
   telegramId: string;
+  collectionId?: string | Types.ObjectId;
   
   // Section 1: Client Profile
   clientProfile: IClientProfile;
@@ -80,6 +75,7 @@ export interface IOrder {
   bodyConcerns?: string;
   inspirationFileId?: string;
   inspirationPublicId?: string;
+  inspirationPhoto?: string;
   colorPreference?: string;
   
   // Section 6: Agreement
@@ -159,6 +155,7 @@ export interface IFormSubmission {
   // Section 2: Order Categorization
   orderType: OrderType;
   occasion: OccasionType;
+  collectionId?: string | Types.ObjectId;
 
   
   // Section 3: Scheduling
