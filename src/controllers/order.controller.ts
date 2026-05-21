@@ -34,6 +34,8 @@ export const submitOrderWrapper = async (req: Request, res: Response): Promise<v
             eventDate: body.eventDate,
             preferredDeliveryDate: body.preferredDeliveryDate,
             measurements: typeof body.measurements === 'string' ? JSON.parse(body.measurements) : body.measurements,
+            sizeOption: body.sizeOption,
+            standardSize: body.standardSize,
             bodyConcerns: body.bodyConcerns,
             colorPreference: body.colorPreference,
             fabricPreference: body.fabricPreference,

@@ -44,7 +44,7 @@ const orderSchema = new mongoose.Schema({
   // ========== SECTION 2: Order Categorization ==========
   orderType: {
     type: String,
-    enum: ['custom_event_dress', 'signature_dress'],
+    enum: ['custom_event_dress', 'signature_dress', 'dress', 'top', 'pants', 'jacket'],
     required: true
   },
   occasion: {
@@ -85,6 +85,16 @@ const orderSchema = new mongoose.Schema({
     type: Map,
     of: Number,
     required: true
+  },
+  sizeOption: {
+    type: String,
+    enum: ['standard', 'custom'],
+    required: false
+  },
+  standardSize: {
+    type: String,
+    enum: ['S', 'M', 'L', 'XL'],
+    required: false
   },
 
   // ========== SECTION 5: Visual Inspiration ==========

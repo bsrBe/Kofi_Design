@@ -40,6 +40,8 @@ export const createOrder = async (submission: IFormSubmission, telegramId: strin
     eventDate: new Date(submission.eventDate),
     preferredDeliveryDate: new Date(submission.preferredDeliveryDate),
     measurements: submission.measurements,
+    sizeOption: submission.sizeOption,
+    standardSize: submission.standardSize,
     bodyConcerns: submission.bodyConcerns || "",
     inspirationFileId: submission.inspirationFileId, // Telegram File ID (if any)
     inspirationPublicId: submission.inspirationPublicId, // Cloudinary public ID

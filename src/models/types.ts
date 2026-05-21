@@ -70,6 +70,8 @@ export interface IOrder {
   
   // Section 4: Measurements
   measurements: IMeasurements;
+  sizeOption?: 'standard' | 'custom';
+  standardSize?: 'S' | 'M' | 'L' | 'XL';
   
   // Section 5: Visual Inspiration
   bodyConcerns?: string;
@@ -164,6 +166,8 @@ export interface IFormSubmission {
   
   // Section 4: Measurements
   measurements: IMeasurements;
+  sizeOption?: 'standard' | 'custom';
+  standardSize?: 'S' | 'M' | 'L' | 'XL';
   
   // Section 5: Visual Inspiration
   bodyConcerns?: string | undefined;
